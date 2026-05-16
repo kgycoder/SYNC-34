@@ -802,6 +802,12 @@ function onYtSt(e) {
         document.getElementById('vizz').classList.remove('off');
         document.getElementById('b-art').classList.add('glow');
         S.dur = S.ytPlayer.getDuration() || 0;
+            post('mediaPlay', {
+        title: S.track?.title || '',
+        artist: S.track?.channel || 'YouTube',
+        thumb: S.track ? getThumbMd(S.track.id) : '',
+        duration: S.dur
+    });
         setT('p-tot', S.dur); setT('np-tot', S.dur);
         document.getElementById('np-ash').classList.add('playing');
         document.getElementById('np-pulse').style.display = 'block';
@@ -809,6 +815,7 @@ function onYtSt(e) {
         startBeatTimer((MOODS[_curMood] || MOODS.default).bpm);
     } else if (e.data === P.PAUSED) {
         S.playing = false; BG.playing = false; updPlay(); stopTick(); stopBeatTimer();
+        post('mediaPause', {});
         document.getElementById('vizz').classList.add('off');
         document.getElementById('b-art').classList.remove('glow');
         document.getElementById('np-ash').classList.remove('playing');
@@ -992,7 +999,14 @@ function playTrack(t, idx = -1) {
     });
     detectMood(t.title);
     extractThumbColors(hq, md, t.title);
-    post('setTitle', { title: t.title });
+        // 기존: post('setTitle', { title: t.title });
+    // 교체:
+    post('mediaPlay', {
+        title: t.title,
+        artist: t.channel || 'YouTube',
+        thumb: getThumbMd(t.id),
+        duration: S.dur || 0
+    });
     renderQueue(); openNP();
     toast(`▶  ${t.title.length > 44 ? t.title.slice(0, 44) + '…' : t.title}`);
     if (OV.active) {
