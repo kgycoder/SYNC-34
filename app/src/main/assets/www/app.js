@@ -1,4 +1,37 @@
 /* ════════════════════════════════════════════
+   BACKGROUND PLAYBACK PATCH
+   document.hidden / visibilityState를 항상
+   false / 'visible'로 고정 → YouTube IFrame이
+   백그라운드에서 재생을 멈추지 못하게 차단
+════════════════════════════════════════════ */
+(function() {
+    // document.hidden 항상 false
+    Object.defineProperty(document, 'hidden', {
+        get: function() { return false; },
+        configurable: true
+    });
+    // document.visibilityState 항상 'visible'
+    Object.defineProperty(document, 'visibilityState', {
+        get: function() { return 'visible'; },
+        configurable: true
+    });
+    // visibilitychange 이벤트 자체를 차단
+    document.addEventListener('visibilitychange', function(e) {
+        e.stopImmediatePropagation();
+    }, true); // capture phase에서 차단
+
+    // Page Lifecycle API 차단 (freeze/resume)
+    document.addEventListener('freeze', function(e) {
+        e.stopImmediatePropagation();
+    }, true);
+
+    // pagehide 차단
+    window.addEventListener('pagehide', function(e) {
+        e.stopImmediatePropagation();
+    }, true);
+})();
+
+/* ════════════════════════════════════════════
    DYNAMIC BACKGROUND — Canvas orbs + beat reactor
 ════════════════════════════════════════════ */
 const CVS = document.getElementById('bgc'), CX = CVS.getContext('2d');
