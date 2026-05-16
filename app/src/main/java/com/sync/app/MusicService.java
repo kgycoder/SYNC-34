@@ -252,7 +252,11 @@ public class MusicService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        // 앱 스와이프 제거 시에도 서비스 유지 (재생 중일 때)
-        if (!isPlaying) stopSelf();
+    // 재생 중이면 서비스 절대 종료하지 않음
+    // 재생 중이 아닐 때만 종료
+    if (!isPlaying) {
+        stopSelf();
+    }
+    // isPlaying 이면 START_STICKY 로 서비스 유지됨
     }
 }
