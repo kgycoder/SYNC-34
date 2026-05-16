@@ -228,11 +228,12 @@ public class MainActivity extends AppCompatActivity {
             unbindService(serviceConn);
             serviceBound = false;
         }
-        // 재생 중이 아닐 때만 서비스 종료
+        // webView.destroy() 호출하지 않음 — 서비스가 살아있는 한 WebView도 유지
+        // 재생 중이 아닐 때만 서비스 + WebView 완전 종료
         if (!curPlaying) {
             stopService(new Intent(this, MusicService.class));
+            webView.destroy();
         }
-        webView.destroy();
     }
 
     // ── JS → Java 브릿지 ──────────────────────────────────
