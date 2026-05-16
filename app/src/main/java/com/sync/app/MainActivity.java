@@ -185,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
                     WebView view, WebResourceRequest request) { return false; }
         });
 
+        webView.setWillNotDraw(false); // 백그라운드에서도 렌더링 유지
+        
         webView.loadUrl(
             "https://appassets.androidplatform.net/assets/www/index.html");
 
@@ -206,19 +208,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // WebView를 pause하지 않으면 YouTube IFrame 오디오가 유지됨
-        // webView.onPause() 를 호출하지 않는 것이 핵심!
-        // 단, 타이머/애니메이션만 멈추기 위해 onHidden만 호출
-        webView.evaluateJavascript(
-            "document.dispatchEvent(new Event('visibilitychange'));", null);
+    // ❌ webView.onPause() 절대 호출 금지
+    // ❌ visibilitychange 이벤트 발생시키지 않기
+    // YouTube IFrame은 visibilitychange:hidden 이벤트를 받으면 즉시 재생 중단
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         webView.onResume();
-        webView.evaluateJavascript(
-            "document.dispatchEvent(new Event('visibilitychange'));", null);
     }
 
     @Override
